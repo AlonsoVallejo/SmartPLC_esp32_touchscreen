@@ -54,11 +54,8 @@ void touchscreen_read(lv_indev_t * indev, lv_indev_data_t * data) {
 
 static void switch_event_cb(lv_event_t * e) {
     lv_obj_t * sw = (lv_obj_t *)lv_event_get_target(e);
-    lv_obj_t * label = (lv_obj_t *)lv_event_get_user_data(e);
     if(lv_obj_has_state(sw, LV_STATE_CHECKED)) {
-        lv_label_set_text(label, "ON");
     } else {
-        lv_label_set_text(label, "OFF");
     }
 }
 
@@ -170,23 +167,17 @@ void lv_create_main_gui(void) {
         lv_obj_set_style_border_color(row, lv_color_hex(0xB0B8C2), 0);
         lv_obj_set_style_radius(row, 6, 0);
 
-        lv_obj_t * out_label = lv_label_create(row);
-        lv_label_set_text(out_label, label_text);
-        lv_obj_set_style_text_color(out_label, lv_color_hex(0x1F3A5A), 0);
-        lv_obj_set_style_text_font(out_label, &lv_font_montserrat_14, 0);
-        lv_obj_align(out_label, LV_ALIGN_LEFT_MID, 1, 0);
-
         /* outputs states switches indicator */
         lv_obj_t * state_switch = lv_switch_create(row);
         lv_obj_align(state_switch, LV_ALIGN_RIGHT_MID, -50, 0);
 
-        lv_obj_t * state_text = lv_label_create(row);
-        lv_label_set_text(state_text, "OFF");
-        lv_obj_set_style_text_color(state_text, lv_color_hex(0x1F3A5A), 0);
-        lv_obj_set_style_text_font(state_text, &lv_font_montserrat_14, 0);
-        lv_obj_align_to(state_text, state_switch, LV_ALIGN_OUT_RIGHT_MID, 8, 0);
+        lv_obj_t * out_label = lv_label_create(row);
+        lv_label_set_text(out_label, label_text);
+        lv_obj_set_style_text_color(out_label, lv_color_hex(0x1F3A5A), 0);
+        lv_obj_set_style_text_font(out_label, &lv_font_montserrat_14, 0);
+        lv_obj_align_to(out_label, state_switch, LV_ALIGN_OUT_RIGHT_MID, 8, 0);
 
-        lv_obj_add_event_cb(state_switch, switch_event_cb, LV_EVENT_VALUE_CHANGED, state_text);
+        lv_obj_add_event_cb(state_switch, switch_event_cb, LV_EVENT_VALUE_CHANGED, NULL);
     }
 
     /* Footer status bar (matches header height and spans full width) */
