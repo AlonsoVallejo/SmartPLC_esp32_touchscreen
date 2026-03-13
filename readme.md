@@ -20,13 +20,15 @@ The project is designed as a **starting point for industrial HMI development** w
 
 ## GUI (LVGL)
 
+![Full Panel Example](/panel/Full_Panel.png)
+
 The graphical interface contains:
 
 ### Inputs Panel
 
 Displays the state of the PLC inputs using LED indicators.
 
-![alt text](image.png)
+![Full Panel Example](/panel/inputs_panel.png)
 
 LED color indicates state:
 
@@ -37,13 +39,13 @@ LED color indicates state:
 
 Outputs can be manually controlled using touchscreen switches.
 
-![alt text](image-1.png)
+![Full Panel Example](/panel/outputs_panel.png)
 
 ### Communication Indicator
 
 Shows whether communication with the PLC is active.
 
-![alt text](image-2.png)
+![Full Panel Example](/panel/header_panel.png)
 
 * Green → communication OK
 * Off → communication lost
@@ -52,9 +54,8 @@ Shows whether communication with the PLC is active.
 
 Displays system information or errors.
 
-Example:
+![Full Panel Example](/panel/footer_panel.png)
 
-![alt text](image-3.png)
 ---
 
 # Hardware
