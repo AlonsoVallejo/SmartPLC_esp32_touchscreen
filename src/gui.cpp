@@ -4,6 +4,7 @@
 #include <SPI.h>
 #include <lvgl.h>
 #include "gui.h"
+#include "plc_comm.h"
 
 /* Touchscreen pins */
 #define XPT2046_IRQ 36   /* T_IRQ */ 
@@ -20,6 +21,10 @@ static XPT2046_Touchscreen touchscreen(XPT2046_CS, XPT2046_IRQ);
 
 #define DRAW_BUF_SIZE (SCREEN_WIDTH * SCREEN_HEIGHT / 10 * (LV_COLOR_DEPTH / 8))
 uint32_t draw_buf[DRAW_BUF_SIZE / 4];
+
+static lv_obj_t * g_input_dots[6];
+static lv_obj_t * g_input_texts[6];
+static lv_obj_t * g_output_switches[6];
 
 static void log_print(lv_log_level_t level, const char * buf) {
   LV_UNUSED(level);
@@ -39,6 +44,13 @@ static void touchscreen_read(lv_indev_t * indev, lv_indev_data_t * data) {
   } else {
     data->state = LV_INDEV_STATE_RELEASED;
   }
+}
+
+static void output_switch_cb(lv_event_t * e) {
+    lv_obj_t * sw = (lv_obj_t *)lv_event_get_target(e);
+    int index = (int)(intptr_t)lv_event_get_user_data(e);
+    bool on = lv_obj_has_state(sw, LV_STATE_CHECKED);
+    plc_set_output(index, on);
 }
 
 static void create_gui_elements(void) {
@@ -128,12 +140,16 @@ static void create_gui_elements(void) {
         lv_obj_set_style_border_width(state_dot, 0, 0);
         lv_obj_align(state_dot, LV_ALIGN_RIGHT_MID, -50, 0);
 
+        g_input_dots[input_num - 1] = state_dot;
+
         /* state text */
         lv_obj_t * state_text = lv_label_create(row);
-        lv_label_set_text(state_text, "ON");
+        lv_label_set_text(state_text, "OFF");
         lv_obj_set_style_text_color(state_text, lv_color_hex(0x1F3A5A), 0);
         lv_obj_set_style_text_font(state_text, &lv_font_montserrat_14, 0);
         lv_obj_align_to(state_text, state_dot, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
+
+        g_input_texts[input_num - 1] = state_text;
     }
 
     /* Outputs panel (center-right between header and footer, right half) */
@@ -165,6 +181,9 @@ static void create_gui_elements(void) {
         /* outputs states switches indicator */
         lv_obj_t * state_switch = lv_switch_create(row);
         lv_obj_align(state_switch, LV_ALIGN_RIGHT_MID, -50, 0);
+
+        g_output_switches[output_num - 1] = state_switch;
+        lv_obj_add_event_cb(state_switch, output_switch_cb, LV_EVENT_VALUE_CHANGED, (void *)(intptr_t)(output_num - 1));
 
         /* output label */
         snprintf(label_text, sizeof(label_text), "OUT%d", output_num);
@@ -212,6 +231,23 @@ void gui_task(void *pvParameters) {
     (void)pvParameters;
 
     while (true) {
+        /* Update input dots indicators and inputs state text*/ 
+        for (int i = 0; i < 6; i++) {
+            bool in_state = plc_get_input(i);
+            lv_obj_set_style_bg_color(g_input_dots[i], in_state ? lv_color_hex(0x4CCB00) : lv_color_hex(0x6B6F7B), 0);
+            lv_label_set_text(g_input_texts[i], in_state ? "ON" : "OFF");
+        }
+
+        /* Update output switches (in case they change externally) */
+        for (int i = 0; i < 6; i++) {
+            bool out_state = plc_get_output(i);
+            if (out_state) {
+                lv_obj_add_state(g_output_switches[i], LV_STATE_CHECKED);
+            } else {
+                lv_obj_clear_state(g_output_switches[i], LV_STATE_CHECKED);
+            }
+        }
+
         lv_task_handler();
         lv_tick_inc(5);
         vTaskDelay(pdMS_TO_TICKS(5));
