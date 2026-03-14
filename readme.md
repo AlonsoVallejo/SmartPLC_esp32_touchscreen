@@ -3,6 +3,7 @@
 ## Overview
 
 This project implements a **touchscreen Human Machine Interface (HMI)** for monitoring and controlling a PLC using an **ESP32-2432S028 (2.8" 240x320 TFT touchscreen)**.
+This project is part of the solution https://github.com/AlonsoVallejo/SmartPLC_atmel328_unit
 
 The interface is built using **LVGL** and provides:
 
@@ -28,8 +29,6 @@ The graphical interface contains:
 
 Displays the state of the PLC inputs using LED indicators.
 
-![Full Panel Example](/panel/inputs_panel.png)
-
 LED color indicates state:
 
 * Green → ON
@@ -39,13 +38,9 @@ LED color indicates state:
 
 Outputs can be manually controlled using touchscreen switches.
 
-![Full Panel Example](/panel/outputs_panel.png)
-
 ### Communication Indicator
 
 Shows whether communication with the PLC is active.
-
-![Full Panel Example](/panel/header_panel.png)
 
 * Green → communication OK
 * Off → communication lost
@@ -53,8 +48,6 @@ Shows whether communication with the PLC is active.
 ### Status Bar
 
 Displays system information or errors.
-
-![Full Panel Example](/panel/footer_panel.png)
 
 ---
 
@@ -90,33 +83,10 @@ The system uses **FreeRTOS tasks**.
 +-------------------+
 ```
 
-Data flow:
-
-```
-PLC -> ESP32 -> GUI
-Touch -> GUI -> PLC
-```
-
----
-
 # Project Structure
 
 ```
-plc_hmi/
-
-src/
- ├── main.cpp        # Application entry point
- ├── gui.cpp         # LVGL interface
- ├── gui.h
- ├── display.cpp     # Display driver
- ├── display.h
- ├── plc_comm.cpp    # PLC communication
- └── plc_comm.h
-
-lv_conf.h            # LVGL configuration
-platformio.ini       # PlatformIO project configuration
 ```
-
 ---
 
 # Dependencies
