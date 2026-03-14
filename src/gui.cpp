@@ -89,61 +89,74 @@ static void create_gui_elements(void) {
     lv_obj_set_style_border_width(inputs_panel, 2, 0);
     lv_obj_set_style_border_color(inputs_panel, lv_color_hex(0x1F3A5A), 0);
     lv_obj_set_style_radius(inputs_panel, 8, 0);
+    lv_obj_set_style_pad_all(inputs_panel, 4, 0); /* remove internal padding */
+    lv_obj_set_layout(inputs_panel, LV_LAYOUT_FLEX); /* activate FLEX layout */
+    lv_obj_set_flex_flow(inputs_panel, LV_FLEX_FLOW_COLUMN);
+    lv_obj_set_style_pad_row(inputs_panel, 2, 0); /* space between rows */
 
     const uint8_t row_count = 6; /* Number of rows */
     const int32_t row_height = 20; /* Height of each row */
-    const int32_t  row_spacing = 2; /* Spacing between rows */
-    int32_t y_offset = -7; /* Offset from the top of the panel */
-    int32_t x_offset = -7; /* Offset from the left of the panel */
 
-    for (int i = 0; i <= row_count; i++) {
+    for (uint8_t input_num = 1; input_num <= row_count; input_num++) {
+
         char label_text[8];
-        snprintf(label_text, sizeof(label_text), "IN%d", i);
 
+        /* create row */
         lv_obj_t * row = lv_obj_create(inputs_panel);
-        lv_obj_set_size(row, lv_obj_get_width(inputs_panel) - 20, row_height);
-        lv_obj_align(row, LV_ALIGN_TOP_LEFT, x_offset, y_offset + (i - 1) * (row_height + row_spacing));
+        lv_obj_set_width(row, lv_pct(100));
+        lv_obj_set_height(row, row_height);
+
         lv_obj_set_style_bg_color(row, lv_color_hex(0xFFFFFF), 0);
         lv_obj_set_style_border_width(row, 1, 0);
         lv_obj_set_style_border_color(row, lv_color_hex(0xB0B8C2), 0);
         lv_obj_set_style_radius(row, 6, 0);
 
+        /* input label */
+        snprintf(label_text, sizeof(label_text), "IN%d", input_num);
+
         lv_obj_t * in_label = lv_label_create(row);
         lv_label_set_text(in_label, label_text);
         lv_obj_set_style_text_color(in_label, lv_color_hex(0x1F3A5A), 0);
         lv_obj_set_style_text_font(in_label, &lv_font_montserrat_14, 0);
-        lv_obj_align(in_label, LV_ALIGN_LEFT_MID, 1, 0);
+        lv_obj_align(in_label, LV_ALIGN_LEFT_MID, 5, 0);
 
+        /* state indicator */
         lv_obj_t * state_dot = lv_obj_create(row);
         lv_obj_set_size(state_dot, 10, 10);
         lv_obj_set_style_radius(state_dot, LV_RADIUS_CIRCLE, 0);
-        lv_obj_set_style_bg_color(state_dot, lv_color_hex(0x4CCB00), 0); // Green for ON
+        lv_obj_set_style_bg_color(state_dot, lv_color_hex(0x4CCB00), 0);
         lv_obj_set_style_border_width(state_dot, 0, 0);
         lv_obj_align(state_dot, LV_ALIGN_RIGHT_MID, -50, 0);
 
+        /* state text */
         lv_obj_t * state_text = lv_label_create(row);
         lv_label_set_text(state_text, "ON");
         lv_obj_set_style_text_color(state_text, lv_color_hex(0x1F3A5A), 0);
         lv_obj_set_style_text_font(state_text, &lv_font_montserrat_14, 0);
-        lv_obj_align_to(state_text, state_dot, LV_ALIGN_OUT_RIGHT_MID, 15, 0);
+        lv_obj_align_to(state_text, state_dot, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
     }
 
-    /* Output panel (center-right between header and footer, right half) */
-    lv_obj_t * output_panel = lv_obj_create(lv_screen_active());
-    lv_obj_set_size(output_panel, (screen_w / 2) - 12, 150);
-    lv_obj_align(output_panel, LV_ALIGN_RIGHT_MID, -12, 0);
-    lv_obj_set_style_bg_color(output_panel, lv_color_hex(0xF1F4F7), 0);
-    lv_obj_set_style_border_width(output_panel, 2, 0);
-    lv_obj_set_style_border_color(output_panel, lv_color_hex(0x1F3A5A), 0);
-    lv_obj_set_style_radius(output_panel, 8, 0);
+    /* Outputs panel (center-right between header and footer, right half) */
+    lv_obj_t * outputs_panel = lv_obj_create(lv_scr_act());
+    lv_obj_set_size(outputs_panel, (screen_w / 2) - 12, 150);
+    lv_obj_align(outputs_panel, LV_ALIGN_RIGHT_MID, -12, 0);
+    lv_obj_set_style_bg_color(outputs_panel, lv_color_hex(0xF1F4F7), 0);
+    lv_obj_set_style_border_width(outputs_panel, 2, 0);
+    lv_obj_set_style_border_color(outputs_panel, lv_color_hex(0x1F3A5A), 0);
+    lv_obj_set_style_radius(outputs_panel, 8, 0);
+    lv_obj_set_style_pad_all(outputs_panel, 4, 0); /* remove internal padding */
+    lv_obj_set_layout(outputs_panel, LV_LAYOUT_FLEX); /* activate FLEX layout */
+    lv_obj_set_flex_flow(outputs_panel, LV_FLEX_FLOW_COLUMN);
+    lv_obj_set_style_pad_row(outputs_panel, 2, 0); /* space between rows */
 
-    for(int i = 0; i <= row_count; i++) {
+    for (uint8_t output_num = 1; output_num <= row_count; output_num++) {
+
         char label_text[8];
-        snprintf(label_text, sizeof(label_text), "OUT%d", i);
 
-        lv_obj_t * row = lv_obj_create(output_panel);
-        lv_obj_set_size(row, lv_obj_get_width(output_panel) - 20, row_height);
-        lv_obj_align(row, LV_ALIGN_TOP_LEFT, x_offset, y_offset + (i-1) * (row_height + row_spacing));
+        /* create row */
+        lv_obj_t * row = lv_obj_create(outputs_panel);
+        lv_obj_set_width(row, lv_pct(100));
+        lv_obj_set_height(row, row_height);
         lv_obj_set_style_bg_color(row, lv_color_hex(0xFFFFFF), 0);
         lv_obj_set_style_border_width(row, 1, 0);
         lv_obj_set_style_border_color(row, lv_color_hex(0xB0B8C2), 0);
@@ -153,11 +166,13 @@ static void create_gui_elements(void) {
         lv_obj_t * state_switch = lv_switch_create(row);
         lv_obj_align(state_switch, LV_ALIGN_RIGHT_MID, -50, 0);
 
+        /* output label */
+        snprintf(label_text, sizeof(label_text), "OUT%d", output_num);
         lv_obj_t * out_label = lv_label_create(row);
         lv_label_set_text(out_label, label_text);
         lv_obj_set_style_text_color(out_label, lv_color_hex(0x1F3A5A), 0);
         lv_obj_set_style_text_font(out_label, &lv_font_montserrat_14, 0);
-        lv_obj_align_to(out_label, state_switch, LV_ALIGN_OUT_RIGHT_MID, 8, 0);
+        lv_obj_align_to(out_label, state_switch, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
     }
 
     /* Footer status bar */
