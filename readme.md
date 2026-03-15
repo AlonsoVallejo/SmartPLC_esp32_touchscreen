@@ -3,14 +3,17 @@
 ## Overview
 
 This project implements a **touchscreen Human Machine Interface (HMI)** for monitoring and controlling a PLC using an **ESP32-2432S028 (2.8" 240x320 TFT touchscreen)**.
-This project is part of the solution https://github.com/AlonsoVallejo/SmartPLC_atmel328_unit
+
+**This GUI is designed to control and monitor the [SmartPLC_atmel328_unit](https://github.com/AlonsoVallejo/SmartPLC_atmel328_unit) Arduino-based PLC board.**
+The ESP32 acts as the HMI front-end, while the Arduino board handles relay outputs and digital inputs.
 
 The interface is built using **LVGL** and provides:
 
-* Monitoring of **6 PLC inputs**
-* Manual control of **6 PLC outputs**
-* **Serial communication status indicator**
-* **System status bar**
+* Real-time monitoring of **6 PLC inputs** (status indicators and text)
+* Manual control of **6 PLC outputs** (touch switches)
+* **Serial communication** with Arduino PLC board (custom protocol)
+* **Communication status indicator** (header bar)
+* **System status bar** (footer)
 * Modular architecture using **FreeRTOS tasks**
 
 The project is designed as a **starting point for industrial HMI development** with ESP32.
@@ -21,33 +24,22 @@ The project is designed as a **starting point for industrial HMI development** w
 
 ## GUI (LVGL)
 
-![Full Panel Example](/panel/Full_Panel.png)
+![Full Panel Example](/board/integration.jpg)
 
-The graphical interface contains:
+**Inputs Panel:**
+- Shows the state of 6 PLC inputs (LED dot + ON/OFF text)
+- Green = ON, Gray = OFF
 
-### Inputs Panel
+**Outputs Panel:**
+- Touch switches for 6 relay outputs
+- State synced with Arduino PLC
 
-Displays the state of the PLC inputs using LED indicators.
+**Communication Indicator:**
+- Header bar shows COM status (online/offline)
+- Green = communication OK
 
-LED color indicates state:
-
-* Green → ON
-* Gray → OFF
-
-### Outputs Panel
-
-Outputs can be manually controlled using touchscreen switches.
-
-### Communication Indicator
-
-Shows whether communication with the PLC is active.
-
-* Green → communication OK
-* Off → communication lost
-
-### Status Bar
-
-Displays system information or errors.
+**Status Bar:**
+- Footer displays system status or errors
 
 ---
 
@@ -143,24 +135,17 @@ PlatformIO: Upload
 
 # PLC Communication
 
-The current implementation contains a **simulation** of PLC inputs.
-
-Replace the logic inside:
-
-```
 src/plc_comm.cpp
-```
+This project implements **real serial communication** between ESP32 and Arduino PLC board.
 
-with real communication such as:
+**Protocol:**
+- ESP32 sends output states: `OUT:xx` (hex byte for 6 relays)
+- ESP32 requests state: `REQ`
+- Arduino responds: `STATE:in:xx` (hex bytes for inputs and outputs)
 
-* **Custom UART protocol**
+See `src/plc_comm.cpp` and `src/serial_protocol.cpp` for protocol details.
 
-Example:
-
-```
-read_inputs_from_plc()
-send_output_command()
-```
+**This HMI is the GUI front-end for [SmartPLC_atmel328_unit](https://github.com/AlonsoVallejo/SmartPLC_atmel328_unit).**
 
 ---
 
@@ -199,6 +184,7 @@ This HMI can be used for:
 * Lab automation
 * Custom control panels
 * IoT gateway for PLC systems
+* As a GUI for [SmartPLC_atmel328_unit](https://github.com/AlonsoVallejo/SmartPLC_atmel328_unit)
 
 ---
 

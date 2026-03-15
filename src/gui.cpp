@@ -26,12 +26,24 @@ static lv_obj_t * g_input_dots[6];
 static lv_obj_t * g_input_texts[6];
 static lv_obj_t * g_output_switches[6];
 
+/**
+ * @brief Log print callback for LVGL
+ * @param[in] level Log level
+ * @param[in] buf Log message
+ * @return void
+ */
 static void log_print(lv_log_level_t level, const char * buf) {
   LV_UNUSED(level);
   Serial.println(buf);
   Serial.flush();
 }
 
+/**
+ * @brief Read touchscreen input for LVGL
+ * @param[in] indev Input device
+ * @param[out] data Input data
+ * @return void
+ */
 static void touchscreen_read(lv_indev_t * indev, lv_indev_data_t * data) {
   if (touchscreen.tirqTouched() && touchscreen.touched()) {
     TS_Point p = touchscreen.getPoint();
@@ -46,6 +58,11 @@ static void touchscreen_read(lv_indev_t * indev, lv_indev_data_t * data) {
   }
 }
 
+/**
+ * @brief Output switch callback for LVGL
+ * @param[in] e Event data
+ * @return void
+ */
 static void output_switch_cb(lv_event_t * e) {
     lv_obj_t * sw = (lv_obj_t *)lv_event_get_target(e);
     int index = (int)(intptr_t)lv_event_get_user_data(e);
@@ -53,6 +70,10 @@ static void output_switch_cb(lv_event_t * e) {
     plc_set_output(index, on);
 }
 
+/**
+ * @brief Create GUI elements for the PLC panel
+ * @return void
+ */
 static void create_gui_elements(void) {
     int32_t screen_w = lv_obj_get_width(lv_scr_act());
 
@@ -209,6 +230,10 @@ static void create_gui_elements(void) {
     lv_obj_center(footer_label);
 }
 
+/**
+ * @brief Initialize the GUI
+ * @return void
+ */
 void gui_init(void) {
     lv_init();
     lv_log_register_print_cb(log_print);
@@ -227,6 +252,11 @@ void gui_init(void) {
     create_gui_elements();
 }
 
+/**
+ * @brief GUI task for updating LVGL elements
+ * @param[in] pvParameters FreeRTOS task parameter (unused)
+ * @return void
+ */
 void gui_task(void *pvParameters) {
     (void)pvParameters;
 
